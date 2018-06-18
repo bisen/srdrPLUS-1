@@ -5,6 +5,7 @@ class QuestionRowColumnField < ApplicationRecord
   #after_create :create_default_question_row_column_fields_question_row_column_field_options
 
   belongs_to :question_row_column, inverse_of: :question_row_column_fields
+  belongs_to :question_row_columns_question_row_column_option, optional: true
 
   has_many :extractions_extraction_forms_projects_sections_question_row_column_fields, dependent: :destroy, inverse_of: :question_row_column_field
   has_many :extractions_extraction_forms_projects_sections, through: :extractions_extraction_forms_projects_sections_question_row_column_fields, dependent: :destroy
