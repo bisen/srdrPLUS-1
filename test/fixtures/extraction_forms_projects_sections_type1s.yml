@@ -6,7 +6,6 @@ one:
   active: true
 
 two:
-  extraction_forms_projects_section: two
+  extraction_forms_projects_section: one
   type1: two
   active: true
-

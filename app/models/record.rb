@@ -65,8 +65,8 @@ class Record < ApplicationRecord
     case self.recordable
     when ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField
       if self.recordable.question_row_column_field.question_row_column.question_row_column_type == QuestionRowColumnType.find_by(name: 'text')  # Text
-        min_length = self.recordable.question_row_column_field.question_row_column.question_row_columns_question_row_column_options.find_by(question_row_column_option_id: 2).name.to_i
-        max_length = self.recordable.question_row_column_field.question_row_column.question_row_columns_question_row_column_options.find_by(question_row_column_option_id: 3).name.to_i
+        min_length = self.recordable.question_row_column_field.question_row_column.question_row_columns_question_row_column_options.find_by(question_row_column_option_id: QuestionRowColumnOption.where(name:'min_length').first.id).name.to_i
+        max_length = self.recordable.question_row_column_field.question_row_column.question_row_columns_question_row_column_options.find_by(question_row_column_option_id: QuestionRowColumnOption.where(name:'max_length').first.id).name.to_i
         if self.persisted? && self.name.length > 0 && (self.name.length < min_length || self.name.length > max_length)
           errors.add(:length, "must be between #{ min_length.to_s } and #{ max_length.to_s }")
         end

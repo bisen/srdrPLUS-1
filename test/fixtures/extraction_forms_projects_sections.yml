@@ -9,6 +9,7 @@ one:
 two:
   extraction_forms_project: one
   extraction_forms_projects_section_type: two
+  link_to_type1: one
   section: two
   active: true
 

@@ -1,9 +1,27 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+answer_choice:
+  name: answer_choice
+  deleted_at:
 
-one:
-  name: MyString
-  deleted_at: 2018-04-16 19:51:26
+min_length:
+  name: min_length
+  deleted_at:
 
-two:
-  name: MyString
-  deleted_at: 2018-04-16 19:51:26
+max_length:
+  name: max_length
+  deleted_at:
+
+min_value:
+  name: min_value
+  deleted_at:
+
+max_value:
+  name: max_value
+  deleted_at:
+
+coefficient:
+  name: coefficient
+  deleted_at:
+
+exponent:
+  name: exponent
+  deleted_at:

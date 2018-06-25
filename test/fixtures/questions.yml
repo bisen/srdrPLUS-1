@@ -2,10 +2,10 @@
 
 one:
   extraction_forms_projects_section: one
-  name: MyString
+  name: question_1
   description: MyText
 
 two:
   extraction_forms_projects_section: one
-  name: MyString
+  name: question_2
   description: MyText
