@@ -22,14 +22,32 @@ Rails.application.routes.draw do
   apipie
   namespace :api do
     namespace :v1 do
-      resources :keywords, only: [:index]
       resources :authors, only: [:index]
+      resources :colors, only: [:index]
+      resources :keywords, only: [:index]
       resources :timepoint_names, only: [:index]
-      resources :citations, only: [:index] do 
+
+      resources :labels_reasons, only: [:create, :destroy]
+      resources :projects_users_term_groups_colors, only: [:create, :update, :destroy] do
+        resources :terms, only: [:create, :update]
+      end
+      resources :projects_users_term_groups_colors_terms, only: [:update, :destroy]
+      resources :taggings, only: [:create, :destroy]
+
+      resources :notes, only: [:create, :update, :destroy]
+
+      resources :assignments do
+        resources :reasons, only: [:index]
+        resources :tags, only: [:index]
+        resources :projects_users_term_groups_colors, only: [:create, :index]
+      end
+
+      resources :citations, only: [:index] do
         collection do
           get 'titles'
         end
       end
+
       resources :projects, shallow: true do
         resources :projects_users_roles, only: [:index]
         resources :assignments do
@@ -49,14 +67,6 @@ Rails.application.routes.draw do
           end
         end
       end
-      resources :assignments do
-        resources :tags, only: [ :index ]
-        resources :reasons, only: [ :index ]
-      end
-      resources :taggings, only: [ :create, :destroy ]
-      resources :notes, only: [ :create, :update, :destroy ]
-      resources :labels_reasons, only: [ :create, :destroy ]
-
     end
   end
 

@@ -39,23 +39,43 @@ module SeedData
         { name: 'Edit' }
       ])
 
+      # Colors
+      Color.create([
+        { hex_code:'#AE2724', name: 'Dark Red' },
+        { hex_code:'#EC3524', name: 'Red' },
+        { hex_code:'#F7C342', name: 'Orange' },
+        { hex_code:'#F6F05D', name: 'Yellow' },
+        { hex_code:'#9FCE63', name: 'Light Green' },
+        { hex_code:'#4DAE5A', name: 'Green' },
+        { hex_code:'#51ABE0', name: 'Light Blue' },
+        { hex_code:'#2A6EB5', name: 'Blue' },
+        { hex_code:'#1E2759', name: 'Dark Blue' },
+        { hex_code:'#673996', name: 'Purple' }
+      ])
+
       # LabelTypes.
-      LabelType.create( name: 'Yes' )
-      LabelType.create( name: 'No' )
-      LabelType.create( name: 'Maybe' )
+      LabelType.create([
+        { name: 'Yes' },
+        { name: 'No' },
+        { name: 'Maybe' }
+      ])
 
       # AssignmentOptionTypes.
-      AssignmentOptionType.create( name: 'TAG_REQUIRED' )
-      AssignmentOptionType.create( name: 'NOTE_REQUIRED' )
-      AssignmentOptionType.create( name: 'REASON_REQUIRED' )
-      AssignmentOptionType.create( name: 'ONLY_LEAD_TAGS' )
-      AssignmentOptionType.create( name: 'ONLY_LEAD_REASONS' )
+      AssignmentOptionType.create([
+        { name: 'TAG_REQUIRED' },
+        { name: 'NOTE_REQUIRED' },
+        { name: 'REASON_REQUIRED' },
+        { name: 'ONLY_LEAD_TAGS' },
+        { name: 'ONLY_LEAD_REASONS' }
+      ])
 
       # TaskTypes.
-      TaskType.create(name: 'Perpetual')
-      TaskType.create(name: 'Pilot')
-      TaskType.create(name: 'Advanced')
-      TaskType.create(name: 'Conflict')
+      TaskType.create([
+        { name: 'Perpetual' },
+        { name: 'Pilot' },
+        { name: 'Advanced' },
+        { name: 'Conflict' }
+      ])
 
       # ConsensusTypes.
       ConsensusType.create([

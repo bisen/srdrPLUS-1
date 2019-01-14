@@ -136,5 +136,5 @@ gem 'ref_parsers'
 # breadcrumbs.
 gem 'breadcrumbs_on_rails'
 
-# authorizations.
+# authorizations.`
 gem "pundit"
