@@ -26,7 +26,6 @@ class Api::V1::CitationsController < Api::V1::BaseController
       @citations              = citations[ offset .. offset + page_size - 1 ]
       @more                   = offset + @citations.length < total_arr.length
     end
-
   end
 
   def titles
