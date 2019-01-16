@@ -486,7 +486,7 @@ document.addEventListener 'turbolinks:load', ->
 
       ## NEW TERM GROUP HANDLING ##
       $( '#new-term-group' ).click ->
-      send_new_term_group( state_obj, "NEW GROUP", 1 )
+        send_new_term_group( state_obj, "NEW GROUP", 1 )
 
       return
 
@@ -834,7 +834,6 @@ document.addEventListener 'turbolinks:load', ->
         success:
           () ->
             fetch_term_groups( obj )
-            toastr.success( 'Term group successfully deleted' )
         error:
           () ->
             toastr.error( 'ERROR: Could not delete term group' )
