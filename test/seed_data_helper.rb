@@ -532,7 +532,7 @@ module SeedDataExtended
         end
 
         # Assignments.
-        Task.all.each do |t|
+        p.tasks.each do |t|
           case t.task_type.name
           when 'Perpetual', 'Pilot'
             Assignment.create([
