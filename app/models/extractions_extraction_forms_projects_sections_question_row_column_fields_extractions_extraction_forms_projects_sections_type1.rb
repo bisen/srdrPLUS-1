@@ -1,0 +1,10 @@
+class ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnFieldsExtractionsExtractionFormsProjectsSectionsType1 < ApplicationRecord
+  self.table_name = 'eefpsqrcf_eefpst1s'
+
+  belongs_to :extractions_extraction_forms_projects_sections_question_row_column_field,
+    inverse_of: :extractions_extraction_forms_projects_sections_question_row_column_fields_extractions_extraction_forms_projects_sections_type1s,
+    foreign_key: 'eefps_qrcf_id'
+  belongs_to :extractions_extraction_forms_projects_sections_type1,
+    inverse_of: :extractions_extraction_forms_projects_sections_question_row_column_fields_extractions_extraction_forms_projects_sections_type1s,
+    foreign_key: 'extractions_extraction_forms_projects_sections_type1_id'
+end

@@ -3,15 +3,6 @@ blockquote
   | Please answer the questions to the best of your ability. If you require clarification, please consult the project lead.
   cite Friendly Helper
 
-- eefps = ExtractionsExtractionFormsProjectsSection.includes(extraction_forms_projects_section: :section).find_by( \
-  extraction: @extraction,
-  extraction_forms_projects_section: efps,
-  link_to_type1: efps.link_to_type1.nil? \
-    ? nil \
-    : ExtractionsExtractionFormsProjectsSection.find_by!( \
-      extraction: @extraction,
-      extraction_forms_projects_section: efps.link_to_type1))
-
 - linked_section = eefps.link_to_type1
 
 /- if linked_section && linked_section.type1s.blank?
@@ -21,7 +12,7 @@ blockquote
     h5 style='color: red;' You must add #{ linked_section.extraction_forms_projects_section.section.name } before extracting into this section.
 
 - else
-  - efps.questions.each_with_index do |q, idx|
+  - eefps.extraction_forms_projects_section.questions.each_with_index do |q, idx|
     / Questions that have prerequisites get classes of the form 'prereq-<type>-<id>' which are disabled while these classes are present.
       Listeners are attached on form fields which trigger on change and remove class from any element that has the 'prereq-<type>-<id>'.
       Once all 'prereq-<type>-<id>' classes are removed the question is enabled.
@@ -45,7 +36,18 @@ blockquote
               / by_type1 && include_total
               - if eefps.extraction_forms_projects_section.extraction_forms_projects_section_option.by_type1
                 - if eefps.extraction_forms_projects_section.extraction_forms_projects_section_option.include_total
-                  - linked_section.eefpst1s_with_total.collect(&:type1).each do |t1|
+                  - eefpst1_variables = linked_section.eefpst1s_with_total
+                  /
+                    - eefpst1_combinations = eefpst1_arr_arr.first || []
+                    - for i in (1..eefpst1_arr_arr.length)
+                      - eefpst1_combinations = eefpst1_combinations.product eefpst1_arr_arr[i]
+                  = render 'extractions/work/type_2/type_1_wrapper.html.slim',
+                    q: q,
+                    eefpst1_variables: eefpst1_variables,
+                    eefpst1_selection: [],
+                    eefps: eefps
+
+                  /- eefpst1_combinations.each do |eefpst1_arr|
                     fieldset.fieldset
                       legend
                         = linked_section.extraction_forms_projects_section.section.name.singularize + ': ' + t1.name
@@ -53,13 +55,22 @@ blockquote
                         = 'Description: ' + t1.description
                       = render 'extractions/shared/type_2/question_fields',
                         q: q,
-                        t1: t1,
+                        eefpst1_arr: eefpst1_arr,
                         eefps: eefps,
                         display_only: false
 
                 / by_type1 && !include_total
                 - else
-                  - linked_section.type1s.where.not(name: 'Total', description: "All #{ linked_section.extraction_forms_projects_section.section.name } combined").each do |t1|
+                  / WHY??? - Birol
+                  /- eefpst1_variables = linked_section.type1s.where.not(name: 'Total', description: "All #{ linked_section.extraction_forms_projects_section.section.name } combined")
+                  - eefpst1_variables = linked_section.eefpst1s_without_total
+                  = render 'extractions/work/type_2/type_1_wrapper.html.slim',
+                    q: q,
+                    eefpst1_variables: eefpst1_variables,
+                    eefpst1_selection: [],
+                    eefps: eefps
+
+                  /- linked_section.type1s.where.not(name: 'Total', description: "All #{ linked_section.extraction_forms_projects_section.section.name } combined").each do |t1|
                     fieldset.fieldset
                       legend
                         = linked_section.extraction_forms_projects_section.section.name.singularize + ': ' + t1.name
@@ -67,43 +78,60 @@ blockquote
                         = 'Description: ' + t1.description
                       = render 'extractions/shared/type_2/question_fields',
                         q: q,
-                        t1: t1,
+                        eefpst1_arr: eefpst1_arr,
                         eefps: eefps,
                         display_only: false
 
               / !by_type1 && include_total
               - else
                 - if eefps.extraction_forms_projects_section.extraction_forms_projects_section_option.include_total
-                  - linked_section.eefpst1s_only_total.collect(&:type1).each do |t1|
-                    fieldset.fieldset
+                  - eefpst1_variables = linked_section.eefpst1s_only_total
+                  = render 'extractions/work/type_2/type_1_wrapper.html.slim',
+                    q: q,
+                    eefpst1_variables: eefpst1_variables,
+                    eefpst1_selection: [],
+                    eefps: eefps
+
+                    /fieldset.fieldset
                       legend
                         = linked_section.extraction_forms_projects_section.section.name.singularize + ': ' + t1.name
                         br
                         = 'Description: ' + t1.description
                       = render 'extractions/shared/type_2/question_fields',
                         q: q,
-                        t1: t1,
+                        eefpst1_arr: eefpst1_arr,
                         eefps: eefps,
                         display_only: false
 
                 / !by_type1 && !include_total
                 - else
-                  fieldset.fieldset
+                  = render 'extractions/work/type_2/type_1_wrapper.html.slim',
+                    q: q,
+                    eefpst1_variables: [],
+                    eefpst1_selection: [],
+                    eefps: eefps
+
+                  /fieldset.fieldset
                     legend
                     = render 'extractions/shared/type_2/question_fields',
                       q: q,
-                      t1: nil,
+                      eefpst1_arr: [],
                       eefps: eefps,
                       display_only: false
 
             / Not linked
             - else
               / !by_type1 && !include_total
-              fieldset.fieldset
+              = render 'extractions/work/type_2/type_1_wrapper.html.slim',
+                q: q,
+                eefpst1_variables: [],
+                eefpst1_selection: [],
+                eefps: eefps
+              /fieldset.fieldset
                 legend
                 = render 'extractions/shared/type_2/question_fields',
                   q: q,
-                  t1: nil,
+                  eefpst1_arr: [],
                   eefps: eefps,
                   display_only: false
 

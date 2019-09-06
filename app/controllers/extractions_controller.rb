@@ -116,6 +116,32 @@ class ExtractionsController < ApplicationController
     add_breadcrumb 'edit project', edit_project_path(@project)
     add_breadcrumb 'extractions',  project_extractions_path(@project)
     add_breadcrumb 'work',         :work_extraction_path
+
+#    # EAGER LOADING eefps_qrcf stuff
+#    qrcf_arr = QuestionRowColumnField.joins(
+#      :question_row_column => {
+#        :question_row => {
+#          :question => {
+#            :extraction_forms_projects_section => [:extraction_forms_project]
+#          }
+#        }
+#    }).where(
+#      :question_row_column => {
+#        :question_row => {
+#          :question => {
+#            :extraction_forms_projects_sections => {
+#              :extraction_forms_project => @extraction_forms_projects
+#            }
+#          }
+#        }
+#      })
+#
+#    @eefps_qrcf_arr = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.includes(:extractions_extraction_forms_projects_section, :question_row_column_field => {:question_row_column => {:question_row => :question}}, :extractions_extraction_forms_projects_sections_type1s).where( question_row_column_field: qrcf_arr )
+#    
+#    @loyloy_dict = @eefps_qrcf_arr.map{|eefps_qrcf| [eefps_qrcf.question.id, {question: eefps_qrcf.question, eefpst]}}
+#    
+    @eefps_arr = ExtractionsExtractionFormsProjectsSection.includes([:link_to_type1, { extraction_forms_projects_section: [:section, :extraction_forms_projects_section_type, :type1s, :extraction_forms_projects_section_option, questions: { question_rows: { question_row_columns: :question_row_column_fields } }] }]).where(extraction: @extraction)
+
   end
 
   # GET /projects/1/extractions/comparison_tool

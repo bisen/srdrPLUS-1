@@ -8,14 +8,14 @@
   eefps.
 
 .column.row
-  - eefps_qrcf = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.find_or_create_by(\
-    extractions_extraction_forms_projects_sections_type1: t1.blank?\
-    ? nil\
-    : ExtractionsExtractionFormsProjectsSectionsType1.find_by!(\
-      extractions_extraction_forms_projects_section: eefps.link_to_type1,
-      type1: t1),
+  - eefps_qrcf = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.find_or_create_by( \
     extractions_extraction_forms_projects_section: eefps,
     question_row_column_field: qrc.question_row_column_fields.first)
+
+  - eefpst1_selection.each do |eefpst1|
+    - ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnFieldsExtractionsExtractionFormsProjectsSectionsType1.find_or_create_by( \
+      extractions_extraction_forms_projects_sections_question_row_column_field: eefps_qrcf,
+      extractions_extraction_forms_projects_sections_type1: eefpst1 )
 
   - record = Record.find_or_create_by(recordable: eefps_qrcf)
   = simple_form_for(record, html: { data: { 'abide': '', 'live-validate': true } }) do |f|

@@ -477,7 +477,8 @@ module ConsolidationHelper
                     t1_type = t1_type_id.present? ? Type1Type.find(t1_type_id) : nil
                     eefps_t1 = t1.present? ? ExtractionsExtractionFormsProjectsSectionsType1.find_by!(extractions_extraction_forms_projects_section: linked_eefps, type1: t1, type1_type: t1_type) : nil
                     #we want  to change find_or_create_by into  find_by asap
-                    eefps_qrcf = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.find_or_create_by!(extractions_extraction_forms_projects_section: eefps, extractions_extraction_forms_projects_sections_type1: eefps_t1,  question_row_column_field: qrcf)
+                    eefps_qrcf = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.find_or_create_by!(extractions_extraction_forms_projects_section: eefps,  question_row_column_field: qrcf)
+                    eefps_qrcf.extractions_extraction_forms_projects_sections_type1s << eefps_t1
                     record = Record.find_or_create_by!(recordable: eefps_qrcf, recordable_type: eefps_qrcf.class.name)
                     if (record.name.nil? or record.name == "") and not (record_name == nil or record_name == "")
                       record.update!( name: record_name.dup.to_s )

@@ -18,12 +18,12 @@
             td class='question-row-column' data-question-row-column-id='#{ qrc.id }'
               - if display_only
                 = render "extractions/consolidate/type_2/question_row_column_types/" + qrc.question_row_column_type.name,
-                  t1: t1,
+                  eefpst1_selection: eefpst1_selection,
                   qrc: qrc,
                   eefps: eefps
 
               - else
                 = render "extractions/work/type_2/question_row_column_types/" + qrc.question_row_column_type.name,
-                  t1: t1,
+                  eefpst1_selection: eefpst1_selection,
                   qrc: qrc,
                   eefps: eefps

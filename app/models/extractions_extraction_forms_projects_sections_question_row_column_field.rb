@@ -7,10 +7,19 @@ class ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField < Applica
   acts_as_paranoid column: :active, sentinel_value: true
   has_paper_trail
 
-  belongs_to :extractions_extraction_forms_projects_sections_type1, inverse_of: :extractions_extraction_forms_projects_sections_question_row_column_fields, optional: true
   belongs_to :extractions_extraction_forms_projects_section,        inverse_of: :extractions_extraction_forms_projects_sections_question_row_column_fields
   belongs_to :question_row_column_field,                            inverse_of: :extractions_extraction_forms_projects_sections_question_row_column_fields
 
+
+  has_many :extractions_extraction_forms_projects_sections_question_row_column_fields_extractions_extraction_forms_projects_sections_type1s, 
+    dependent: :destroy,
+    inverse_of: :extractions_extraction_forms_projects_sections_question_row_column_field
+  has_many :extractions_extraction_forms_projects_sections_type1s, 
+    through: :extractions_extraction_forms_projects_sections_question_row_column_fields_extractions_extraction_forms_projects_sections_type1s,
+    dependent: :destroy
+  has_many :extractions_extraction_forms_projects_sections_question_row_column_fields, 
+    through: :extractions_extraction_forms_projects_sections_question_row_column_fields_extractions_extraction_forms_projects_sections_type1s,
+    dependent: :destroy
   has_many :extractions_extraction_forms_projects_sections_question_row_column_fields_question_row_columns_question_row_column_options,
     dependent: :destroy,
     inverse_of: :extractions_extraction_forms_projects_sections_question_row_column_field,

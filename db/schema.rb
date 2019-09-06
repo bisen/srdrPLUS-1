@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_17_024915) do
+ActiveRecord::Schema.define(version: 2019_08_29_200415) do
 
   create_table "abstrackr_settings", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "profile_id"
@@ -346,7 +346,6 @@ ActiveRecord::Schema.define(version: 2019_08_17_024915) do
   end
 
   create_table "eefps_qrcfs", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.integer "extractions_extraction_forms_projects_sections_type1_id"
     t.integer "extractions_extraction_forms_projects_section_id"
     t.integer "question_row_column_field_id"
     t.text "name"
@@ -356,11 +355,21 @@ ActiveRecord::Schema.define(version: 2019_08_17_024915) do
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_eefps_qrcfs_on_active"
     t.index ["deleted_at"], name: "index_eefps_qrcfs_on_deleted_at"
+    t.index ["extractions_extraction_forms_projects_section_id", "question_row_column_field_id", "active"], name: "index_eefpsqrcf_on_eefpst1_id_eefps_id_qrcf_id_active"
+    t.index ["extractions_extraction_forms_projects_section_id", "question_row_column_field_id", "deleted_at"], name: "index_eefpsqrcf_on_eefpst1_id_eefps_id_qrcf_id_deleted_at"
     t.index ["extractions_extraction_forms_projects_section_id"], name: "index_eefpsqrcf_on_eefps_id"
-    t.index ["extractions_extraction_forms_projects_sections_type1_id", "extractions_extraction_forms_projects_section_id", "question_row_column_field_id", "active"], name: "index_eefpsqrcf_on_eefpst1_id_eefps_id_qrcf_id_active"
-    t.index ["extractions_extraction_forms_projects_sections_type1_id", "extractions_extraction_forms_projects_section_id", "question_row_column_field_id", "deleted_at"], name: "index_eefpsqrcf_on_eefpst1_id_eefps_id_qrcf_id_deleted_at"
-    t.index ["extractions_extraction_forms_projects_sections_type1_id"], name: "index_eefpsqrcf_on_eefpst1_id"
     t.index ["question_row_column_field_id"], name: "index_eefpsqrcf_on_qrcf_id"
+  end
+
+  create_table "eefpsqrcf_eefpst1s", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "eefps_qrcf_id"
+    t.integer "extractions_extraction_forms_projects_sections_type1_id"
+    t.datetime "deleted_at"
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["eefps_qrcf_id"], name: "index_eefpsqrcfeefpst1_on_eefps_qrcf_id"
+    t.index ["extractions_extraction_forms_projects_sections_type1_id"], name: "index_eefpsqrcfeefpst1_on_eefpst1_id"
   end
 
   create_table "eefpsqrcf_qrcqrcos", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -781,7 +790,7 @@ ActiveRecord::Schema.define(version: 2019_08_17_024915) do
     t.datetime "created_at", null: false
     t.datetime "revoked_at"
     t.string "scopes"
-    t.index ["application_id"], name: "fk_rails_b4b53e07b8"
+    t.index ["application_id"], name: "index_oauth_access_grants_on_application_id"
     t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
   end
 
@@ -795,7 +804,7 @@ ActiveRecord::Schema.define(version: 2019_08_17_024915) do
     t.datetime "created_at", null: false
     t.string "scopes"
     t.string "previous_refresh_token", default: "", null: false
-    t.index ["application_id"], name: "fk_rails_732cb83ab7"
+    t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
     t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
     t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
     t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
@@ -1246,10 +1255,10 @@ ActiveRecord::Schema.define(version: 2019_08_17_024915) do
     t.string "query"
     t.string "normalized_query"
     t.integer "results_count"
-    t.datetime "created_at"
+    t.timestamp "created_at"
     t.string "convertable_type"
     t.integer "convertable_id"
-    t.datetime "converted_at"
+    t.timestamp "converted_at"
     t.index ["convertable_type", "convertable_id"], name: "index_searchjoy_searches_on_convertable_type_and_convertable_id"
     t.index ["created_at"], name: "index_searchjoy_searches_on_created_at"
     t.index ["search_type", "created_at"], name: "index_searchjoy_searches_on_search_type_and_created_at"
@@ -1527,8 +1536,9 @@ ActiveRecord::Schema.define(version: 2019_08_17_024915) do
   add_foreign_key "degrees_profiles", "profiles"
   add_foreign_key "dispatches", "users"
   add_foreign_key "eefps_qrcfs", "extractions_extraction_forms_projects_sections"
-  add_foreign_key "eefps_qrcfs", "extractions_extraction_forms_projects_sections_type1s"
   add_foreign_key "eefps_qrcfs", "question_row_column_fields"
+  add_foreign_key "eefpsqrcf_eefpst1s", "eefps_qrcfs"
+  add_foreign_key "eefpsqrcf_eefpst1s", "extractions_extraction_forms_projects_sections_type1s"
   add_foreign_key "eefpsqrcf_qrcqrcos", "eefps_qrcfs"
   add_foreign_key "eefpsqrcf_qrcqrcos", "question_row_columns_question_row_column_options"
   add_foreign_key "exported_items", "export_types"

@@ -1,12 +1,3 @@
-- eefps = ExtractionsExtractionFormsProjectsSection.includes(extraction_forms_projects_section: :section).find_by!( \
-  extraction: @extraction,
-  extraction_forms_projects_section: efps,
-  link_to_type1: efps.link_to_type1.nil? \
-    ? nil \
-    : ExtractionsExtractionFormsProjectsSection.find_by!( \
-      extraction: @extraction,
-      extraction_forms_projects_section: efps.link_to_type1))
-
 .column.row
   = render 'extractions/shared/type_1/type_1_friendly_helper_message',
     extraction: @extraction,

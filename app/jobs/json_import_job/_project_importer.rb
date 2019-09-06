@@ -765,10 +765,16 @@ class ProjectImporter
         qrcf = @id_map['qrcf'][qrcfid]
         if qrcf.nil?; byebug end
         qrc_type_name = qrcf.question_row_column.question_row_column_type.name
-        eefpst1 = @id_map['eefpst1'][rhash['extractions_extraction_forms_projects_sections_type1_id']]
         eefpsqrcf = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.find_or_create_by! extractions_extraction_forms_projects_section: eefps,
-                                                                                                        extractions_extraction_forms_projects_sections_type1: eefpst1,
                                                                                                         question_row_column_field: qrcf
+
+        ExtractionsExtractionFormsProjectsSectionsType1.transaction do
+          rhash['extractions_extraction_forms_projects_sections_type1_ids'].values.each do |eefpst1_id|
+            eefpst1 = @id_map['eefpst1'][eefpst1_id]
+            eefpsqrcf.extractions_extraction_forms_projects_sections_type1 << eefpst1
+          end
+        end
+
         record_name = rhash['name'] || ""
 
         case qrc_type_name

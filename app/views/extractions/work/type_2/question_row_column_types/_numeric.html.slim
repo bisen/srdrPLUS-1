@@ -15,14 +15,14 @@
   - if ActiveModel::Type::Boolean.new.cast(qrc.field_validation_value_for(:additional_char))
     .column.medium-4
       / Special char is one of the following: ~, <, >, ≤, ≥
-      - eefps_qrcf_special = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.find_or_create_by!( \
-        extractions_extraction_forms_projects_sections_type1: t1.blank? \
-        ? nil \
-        : ExtractionsExtractionFormsProjectsSectionsType1.find_by!( \
-          extractions_extraction_forms_projects_section: eefps.link_to_type1,
-          type1: t1),
+      - eefps_qrcf_special = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.find_or_create_by( \
         extractions_extraction_forms_projects_section: eefps,
         question_row_column_field: qrc.question_row_column_fields.first)
+
+      - eefpst1_selection.each do |eefpst1|
+        - ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnFieldsExtractionsExtractionFormsProjectsSectionsType1.find_or_create_by( \
+          extractions_extraction_forms_projects_sections_question_row_column_field: eefps_qrcf_special,
+          extractions_extraction_forms_projects_sections_type1: eefpst1 )
 
       - record = Record.find_or_create_by!(recordable: eefps_qrcf_special)
       = simple_form_for(record, remote: true, html: { data: { 'abide': '', 'live-validate': true } }) do |f|
@@ -42,14 +42,15 @@
     / We handle the creation of the second question_row_column_fields in model/question_row_column :after_save callback.
     - byebug if qrc.question_row_column_fields.length < 2
     /- qrc.question_row_column_fields.create if qrc.question_row_column_fields.lenght < 2
-    - eefps_qrcf = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.find_or_create_by!( \
-      extractions_extraction_forms_projects_sections_type1: t1.blank? \
-      ? nil \
-      : ExtractionsExtractionFormsProjectsSectionsType1.find_by!( \
-        extractions_extraction_forms_projects_section: eefps.link_to_type1,
-        type1: t1),
+
+    - eefps_qrcf = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField.find_or_create_by( \
       extractions_extraction_forms_projects_section: eefps,
       question_row_column_field: qrc.question_row_column_fields.second)
+
+    - eefpst1_selection.each do |eefpst1|
+      - ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnFieldsExtractionsExtractionFormsProjectsSectionsType1.find_or_create_by( \
+        extractions_extraction_forms_projects_sections_question_row_column_field: eefps_qrcf,
+        extractions_extraction_forms_projects_sections_type1: eefpst1 )
 
     - record = Record.find_or_create_by!(recordable: eefps_qrcf)
     = simple_form_for(record, remote: true, html: { data: { 'abide': '', 'live-validate': true } }) do |f|

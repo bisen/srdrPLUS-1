@@ -1,0 +1,19 @@
+- if eefpst1_variables.empty?
+  = render 'extractions/shared/type_2/question_fields',
+    q: q,
+    eefpst1_selection: eefpst1_selection,
+    eefps: eefps,
+    display_only: false
+- else
+  - eefpst1_variables.first.each do |eefpst1|
+    fieldset.fieldset
+      legend
+        = eefpst1.type1.name
+        br 
+        = 'Description: ' + eefpst1.type1.description
+      = render 'extractions/work/type_2/type_1_wrapper.html.slim',
+        q: q,
+        eefpst1_variables: eefpst1_variables[1..-1],
+        eefpst1_selection: [eefpst1] + eefpst1_selection,
+        eefps: eefps,
+        display_only: false

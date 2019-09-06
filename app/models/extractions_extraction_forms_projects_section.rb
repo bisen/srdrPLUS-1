@@ -90,29 +90,59 @@ class ExtractionsExtractionFormsProjectsSection < ApplicationRecord
   end
 
   def eefpst1s_only_total
-    type1 = Type1.find_or_create_by(name: "Total", description: "All #{ extraction_forms_projects_section.link_to_type1.present? ? extraction_forms_projects_section.link_to_type1.section.name : extraction_forms_projects_section.section.name } combined")
-    type1s << type1 unless type1s.include? type1
-    [extractions_extraction_forms_projects_sections_type1s.joins(:type1).find_by(type1s: { name: 'Total', description: "All #{ extraction_forms_projects_section.link_to_type1.present? ? extraction_forms_projects_section.link_to_type1.section.name : extraction_forms_projects_section.section.name } combined" })]
+    current_t1_eefps = extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 1" ? self: self.link_to_type1
+    eefpst1_variables = []
+    
+    while current_t1_eefps.link_to_type1.present?
+      eefpst1_variables << []
+      current_t1_eefps = current_t1_eefps.link_to_type1
+    end
+    type1 = Type1.find_or_create_by(name: "Total", description: "All #{ current_t1_eefps.section.name } combined")
+    current_t1_eefps.type1s << type1 unless type1s.include? type1
+    eefpst1_variables << [extractions_extraction_forms_projects_sections_type1s.joins(:type1).find_by(type1s: { name: 'Total', description: "All #{ extraction_forms_projects_section.link_to_type1.present? ? extraction_forms_projects_section.link_to_type1.section.name : extraction_forms_projects_section.section.name } combined" })]
   end
 
   def eefpst1s_without_total
-    extractions_extraction_forms_projects_sections_type1s
+    current_t1_eefps = extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 1" ? self: self.link_to_type1
+    eefpst1_variables = []
+    while current_t1_eefps.link_to_type1.present?
+      eefpst1_variables << current_t1_eefps.extractions_extraction_forms_projects_sections_type1s
+        .extractions_extraction_forms_projects_sections_type1s
+        .includes(:type1_type, :type1)
+        .to_a
+      current_t1_eefps = current_t1_eefps.link_to_type1
+    end
+    eefpst1_variables << current_t1_eefps.extractions_extraction_forms_projects_sections_type1s
       .includes(:type1_type, :type1)
       .to_a
       .delete_if { |efpst1| efpst1.type1==Type1.find_by(name: 'Total', description: "All #{ extraction_forms_projects_section.link_to_type1.present? ? extraction_forms_projects_section.link_to_type1.section.name : extraction_forms_projects_section.section.name } combined") }
+    return eefpst1_variables
   end
 
   def eefpst1s_with_total
-    type1 = Type1.find_or_create_by(name: "Total", description: "All #{ extraction_forms_projects_section.link_to_type1.present? ? extraction_forms_projects_section.link_to_type1.section.name : extraction_forms_projects_section.section.name } combined")
-    type1s << type1 unless type1s.include? type1
-    ab = extractions_extraction_forms_projects_sections_type1s
+    current_t1_eefps = extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 1" ? self: self.link_to_type1
+    eefpst1_variables = []
+
+    while current_t1_eefps.link_to_type1.present?
+      type1 = Type1.find_or_create_by(name: "Total", description: "All #{ current_t1_eefps.section.name } combined")
+      current_t1_eefps.type1s << type1 unless type1s.include? type1
+      eefpst1_variables << current_t1_eefps.extractions_extraction_forms_projects_sections_type1s
+        .includes(:type1_type, :type1)
+        .to_a
+      current_t1_eefps = current_t1_eefps.link_to_type1
+    end
+    
+    type1 = Type1.find_or_create_by(name: "Total", description: "All #{ current_t1_eefps.section.name } combined")
+    current_t1_eefps.type1s << type1 unless type1s.include? type1
+    ab = current_t1_eefps.extractions_extraction_forms_projects_sections_type1s
       .includes(:type1_type, :type1)
       .to_a
-      .delete_if { |efpst1| efpst1.type1==Type1.find_by(name: 'Total', description: "All #{ extraction_forms_projects_section.link_to_type1.present? ? extraction_forms_projects_section.link_to_type1.section.name : extraction_forms_projects_section.section.name } combined") }
-      .push(extractions_extraction_forms_projects_sections_type1s.joins(:type1).find_by(type1s: { name: 'Total', description: "All #{ extraction_forms_projects_section.link_to_type1.present? ? extraction_forms_projects_section.link_to_type1.section.name : extraction_forms_projects_section.section.name } combined" }))
+      .delete_if { |efpst1| efpst1.type1==Type1.find_by(name: 'Total', description: "All #{ current_t1_eefps.section.name } combined") }
+      .push(current_t1_eefps.extractions_extraction_forms_projects_sections_type1s.joins(:type1).find_by(type1s: { name: 'Total', description: "All #{ current_t1_eefps.section.name } combined" }))
     raise if ab.any?(&:nil?)
+    eefpst1_variables << ab
 
-    return ab
+    return eefpst1_variables
   end
 
   # Do not create duplicate Type1 entries.
