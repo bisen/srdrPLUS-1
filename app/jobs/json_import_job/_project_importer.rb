@@ -771,7 +771,7 @@ class ProjectImporter
         ExtractionsExtractionFormsProjectsSectionsType1.transaction do
           rhash['extractions_extraction_forms_projects_sections_type1_ids'].values.each do |eefpst1_id|
             eefpst1 = @id_map['eefpst1'][eefpst1_id]
-            eefpsqrcf.extractions_extraction_forms_projects_sections_type1 << eefpst1
+            eefpsqrcf.extractions_extraction_forms_projects_sections_type1s << eefpst1
           end
         end
 
