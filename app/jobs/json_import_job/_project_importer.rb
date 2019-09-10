@@ -620,7 +620,6 @@ class ProjectImporter
       # this has to be already there, because I'm counting on the callback and validations
       eefps = ExtractionsExtractionFormsProjectsSection.find_by! extraction: e,
                                                                  extraction_forms_projects_section: efps
-
       @id_map['eefps'][sid.to_i] = eefps
 
       #if shash['link_to_t1'].present?

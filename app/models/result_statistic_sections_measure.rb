@@ -14,6 +14,8 @@ class ResultStatisticSectionsMeasure < ApplicationRecord
   has_many :tps_comparisons_rssms, dependent: :destroy, inverse_of: :result_statistic_sections_measure
   has_many :comparisons_arms_rssms, dependent: :destroy, inverse_of: :result_statistic_sections_measure
 
+  delegate :extraction, to: :result_statistic_section
+
   private
     def set_extraction_stale
       self.extraction.extraction_checksum.update( is_stale: true ) 

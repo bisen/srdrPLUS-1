@@ -44,18 +44,15 @@ def build_type2_sections_wide(p, project, highlight, wrap, kq_ids=[])
             # type1 via eefps.link_to_type1.extractions_extraction_forms_projects_sections_type1s.
             # Otherwise we proceed with eefpst1s set to a custom Struct that responds
             # to :id, type1: :id.
-            eefpst1s = (eefps.extraction_forms_projects_section.extraction_forms_projects_section_option.by_type1 and eefps.link_to_type1.present?) ? 
-              eefps.link_to_type1.extractions_extraction_forms_projects_sections_type1s :
-              [Struct.new(:id, :type1).new(nil, Struct.new(:id).new(nil))]
-
-            eefpst1s.each do |eefpst1|
+            eefpst1_variables = eefps.link_to_type1.eefpst1s
+            eefpst1_variables.each do |eefpst1_arr|
               questions.each do |q|
                 q.question_rows.each do |qr|
                   qr.question_row_columns.each do |qrc|
                     sheet_info.add_question_row_column(
                       extraction_id: extraction.id,
                       section_name: efps.section.name.singularize,
-                      type1_id: eefpst1.type1.id,
+                      type1s: eefpst1_arr.pluck(:'type1.id'),
                       question_id: q.id,
                       question_name: q.name,
                       question_description: q.description,

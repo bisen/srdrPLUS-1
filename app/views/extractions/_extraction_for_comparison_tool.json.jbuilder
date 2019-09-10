@@ -31,12 +31,12 @@ json.sections extraction.extractions_extraction_forms_projects_sections.order(:e
             # type1 via eefps.extractions_extraction_forms_projects_sections_type1s.
             # Otherwise we proceed with eefpst1s set to a custom Struct that responds
             # to :id, type1: :id.
-            eefpst1s = eefps.link_to_type1.present? ?
-              eefps.link_to_type1.extractions_extraction_forms_projects_sections_type1s :
-              [Struct.new(:id, :type1).new(nil, Struct.new(:id).new(nil))]
-            json.type1s eefpst1s do |eefpst1|
-              json.id eefpst1.type1.id
-              json.answers eefps.eefps_qrfc_values(eefpst1.id, qrc).to_s
+            eefpst1_variables = eefps.eefpst1s
+            json.records eefpst1_variables do |eefpst1_arr|
+              json.records eefpst1_arr do |eefpst1|
+                json.id eefpst1.type1.id
+              end
+              json.answers eefps.eefps_qrfc_values(eefpst1_arr, qrc).to_s
             end
           end
         end

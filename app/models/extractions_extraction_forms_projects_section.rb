@@ -47,16 +47,20 @@ class ExtractionsExtractionFormsProjectsSection < ApplicationRecord
       .distinct
   end
 
-  def eefps_qrfc_values(eefpst1_id, qrc)
-    recordables = extractions_extraction_forms_projects_sections_question_row_column_fields
-      .where(extractions_extraction_forms_projects_sections_type1_id: eefpst1_id,
-             question_row_column_field: qrc.question_row_column_fields)
+  def eefps_qrfc_values(eefpst1_arr, qrc)
+    eefps_qrcf_ids = ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnFieldsExtractionsExtractionFormsProjectsSectionsType1.where(extractions_extraction_forms_projects_sections_type1: eefpst1_arr, extractions_extraction_forms_projects_sections_question_row_column_field: extractions_extraction_forms_projects_sections_question_row_column_fields ).group(:eefps_qrcf_id).having("count('id') = #{eefpst1_arr.length.to_s}").pluck(:eefps_qrcf_id)
+    #recordables = extractions_extraction_forms_projects_sections_question_row_column_fields
+    #  .where(extractions_extraction_forms_projects_sections_type1_id: eefpst1_id,
+    #         question_row_column_field: qrc.question_row_column_fields)
+
+    if not qrc.question_row_column_type_id == 9
+      record_names = Record.where(recordable_id: eefps_qrcf_ids, recordable_type: 'ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnField').pluck(:name)
+    end
 
     case qrc.question_row_column_type_id
-
     when 5
       text_arr = []
-      Record.where(recordable: recordables).pluck(:name).each do |opt_ids|
+      record_names.each do |opt_ids|
         if opt_ids.nil? or opt_ids.length < 4 then next end
         (opt_ids[2..-3].split('", "')-[""]).each do |opt_id|
           # opt_id can be nil here for questions that have not been answered.
@@ -69,7 +73,7 @@ class ExtractionsExtractionFormsProjectsSection < ApplicationRecord
 
     when 6, 7, 8
       text = ''
-      Record.where(recordable: recordables).pluck(:name).each do |opt_id|
+      record_names.each do |opt_id|
         # opt_id can be nil here for questions that have not been answered.
         # Protect by casting to zero and check.
         text += qrc.question_row_columns_question_row_column_options.find(opt_id.to_i).name + "\r" unless opt_id.to_i.zero?
@@ -77,7 +81,7 @@ class ExtractionsExtractionFormsProjectsSection < ApplicationRecord
       return text
     when 9
       text = ''
-      ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnFieldsQuestionRowColumnsQuestionRowColumnOption.includes(:question_row_columns_question_row_column_option).where(extractions_extraction_forms_projects_sections_question_row_column_field: recordables).each do |eefpsqrcfqrcqrco|
+      ExtractionsExtractionFormsProjectsSectionsQuestionRowColumnFieldsQuestionRowColumnsQuestionRowColumnOption.includes(:question_row_columns_question_row_column_option).where(extractions_extraction_forms_projects_sections_question_row_column_field_id: eefps_qrcf_ids).each do |eefpsqrcfqrcqrco|
         opt_id = eefpsqrcfqrcqrco.question_row_columns_question_row_column_option.name
         # opt_id can be nil here for questions that have not been answered.
         # Protect by casting to zero and check.
@@ -85,12 +89,12 @@ class ExtractionsExtractionFormsProjectsSection < ApplicationRecord
       end
       return text
     else
-      return Record.where(recordable: recordables).pluck(:name).join('\r')
+      return record_names.join('\r')
     end
   end
 
   def eefpst1s_only_total
-    current_t1_eefps = extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 1" ? self: self.link_to_type1
+    current_t1_eefps = (extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 2" and link_to_type1.present?) ? link_to_type1 : self
     eefpst1_variables = []
     
     while current_t1_eefps.link_to_type1.present?
@@ -103,24 +107,25 @@ class ExtractionsExtractionFormsProjectsSection < ApplicationRecord
   end
 
   def eefpst1s_without_total
-    current_t1_eefps = extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 1" ? self: self.link_to_type1
+    current_t1_eefps = (extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 2" and link_to_type1.present?) ? link_to_type1 : self
     eefpst1_variables = []
     while current_t1_eefps.link_to_type1.present?
       eefpst1_variables << current_t1_eefps.extractions_extraction_forms_projects_sections_type1s
         .extractions_extraction_forms_projects_sections_type1s
         .includes(:type1_type, :type1)
         .to_a
+        .delete_if { |efpst1| efpst1.type1==Type1.find_by(name: 'Total', description: "All #{ current_t1_eefps.section.name } combined") }
       current_t1_eefps = current_t1_eefps.link_to_type1
     end
     eefpst1_variables << current_t1_eefps.extractions_extraction_forms_projects_sections_type1s
       .includes(:type1_type, :type1)
       .to_a
-      .delete_if { |efpst1| efpst1.type1==Type1.find_by(name: 'Total', description: "All #{ extraction_forms_projects_section.link_to_type1.present? ? extraction_forms_projects_section.link_to_type1.section.name : extraction_forms_projects_section.section.name } combined") }
+      .delete_if { |efpst1| efpst1.type1==Type1.find_by(name: 'Total', description: "All #{ current_t1_eefps.section.name } combined") }
     return eefpst1_variables
   end
 
   def eefpst1s_with_total
-    current_t1_eefps = extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 1" ? self: self.link_to_type1
+    current_t1_eefps = (extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 2" and link_to_type1.present?) ? link_to_type1 : self
     eefpst1_variables = []
 
     while current_t1_eefps.link_to_type1.present?
@@ -139,6 +144,26 @@ class ExtractionsExtractionFormsProjectsSection < ApplicationRecord
       .to_a
       .delete_if { |efpst1| efpst1.type1==Type1.find_by(name: 'Total', description: "All #{ current_t1_eefps.section.name } combined") }
       .push(current_t1_eefps.extractions_extraction_forms_projects_sections_type1s.joins(:type1).find_by(type1s: { name: 'Total', description: "All #{ current_t1_eefps.section.name } combined" }))
+    raise if ab.any?(&:nil?)
+    eefpst1_variables << ab
+
+    return eefpst1_variables
+  end
+
+  def eefpst1s
+    current_t1_eefps = (extraction_forms_projects_section.extraction_forms_projects_section_type.name == "Type 2" and link_to_type1.present?) ? link_to_type1 : self
+    eefpst1_variables = []
+
+    while current_t1_eefps.link_to_type1.present?
+      eefpst1_variables << current_t1_eefps.extractions_extraction_forms_projects_sections_type1s
+        .includes(:type1_type, :type1)
+        .to_a
+      current_t1_eefps = current_t1_eefps.link_to_type1
+    end
+    
+    ab = current_t1_eefps.extractions_extraction_forms_projects_sections_type1s
+      .includes(:type1_type, :type1)
+      .to_a
     raise if ab.any?(&:nil?)
     eefpst1_variables << ab
 
