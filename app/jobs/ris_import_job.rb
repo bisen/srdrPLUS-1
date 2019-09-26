@@ -97,6 +97,12 @@ class RisImportJob < ApplicationJob
 
     @project.citations << Citation.create!( h_arr )
 
+    ActiveRecord::Base.transaction do
+      h_arr.each_slice(20) do |h_arr_slice|
+         @project.citations << Citation.create!( h_arr_slice )
+       end
+    end
+
     ImportMailer.notify_import_completion(@user.id, @project.id).deliver_later
   end
 end
